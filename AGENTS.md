@@ -38,10 +38,13 @@
 - Reference issues: `fix: resolve crash (#5)`
 
 ## Directory Structure
-- `src/` - Main source code
-- `src/ai/` - AI-related functionality
-- `src/index.ts` - Main process entry
-- `src/preload.ts` - Preload script
-- `src/renderer.ts` - Renderer process
-- `src/index.html` - HTML template
-- `.webpack/` - Webpack configurations
+- `app/` - Application source and build configuration
+- `app/src/` - Main source code
+- `app/src/ai/` - AI-related functionality
+- `app/src/index.ts` - Main process entry
+- `app/src/preload.ts` - Preload script
+- `app/src/renderer.ts` - Renderer process
+- `app/src/index.html` - HTML template
+- `app/.webpack/` - Webpack build output
+- `app/forge.config.ts` - Electron Forge configuration
+- `app/webpack.*.ts` - Webpack configuration files

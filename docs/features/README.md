@@ -4,7 +4,6 @@
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| [native-performance](native-performance/) | stable | Blazing fast native performance via Electron |
 | [keyboard-workflow](keyboard-workflow/) | planned | 100% keyboard-driven workflow |
 | [noise-filtering](noise-filtering/) | planned | Intelligent filtering of AI-generated noise |
 | [github-pr-integration](github-pr-integration/) | planned | Deep integration with GitHub pull requests |
