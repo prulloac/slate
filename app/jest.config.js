@@ -14,5 +14,10 @@ module.exports = {
       lines: 70,
       statements: 70
     }
-  }
+  },
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
+      useESM: false,
+    }],
+  },
 };
