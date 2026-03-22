@@ -50,20 +50,19 @@ export class GitHubSettingsPanel {
       </div>
     `;
     this.attachEventListeners();
-    
-    // Safely set dynamic content to prevent XSS
+
     if (this.state.isAuthenticated) {
       const usernameElement = this.container.querySelector('.auth-info strong') as HTMLElement;
       if (usernameElement) {
         usernameElement.textContent = this.state.username || '';
       }
-      
-      const ownerInput = document.getElementById('github-owner') as HTMLInputElement;
+
+      const ownerInput = this.container.querySelector('#github-owner') as HTMLInputElement;
       if (ownerInput) {
         ownerInput.value = this.state.owner;
       }
-      
-      const repoInput = document.getElementById('github-repo') as HTMLInputElement;
+
+      const repoInput = this.container.querySelector('#github-repo') as HTMLInputElement;
       if (repoInput) {
         repoInput.value = this.state.repo;
       }
@@ -106,26 +105,26 @@ export class GitHubSettingsPanel {
   }
 
   private attachEventListeners(): void {
-    const loginBtn = document.getElementById('github-login');
+    const loginBtn = this.container.querySelector('#github-login');
     if (loginBtn) {
       loginBtn.addEventListener('click', () => this.handleLogin());
     }
 
-    const logoutBtn = document.getElementById('github-logout');
+    const logoutBtn = this.container.querySelector('#github-logout');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => this.handleLogout());
     }
 
-    const saveRepoBtn = document.getElementById('github-save-repo');
+    const saveRepoBtn = this.container.querySelector('#github-save-repo');
     if (saveRepoBtn) {
       saveRepoBtn.addEventListener('click', () => this.handleSaveRepo());
     }
   }
 
   private async handleLogin(): Promise<void> {
-    const tokenInput = document.getElementById('github-token') as HTMLInputElement;
-    const errorDiv = document.getElementById('github-login-error');
-    const token = tokenInput.value.trim();
+    const tokenInput = this.container.querySelector('#github-token') as HTMLInputElement;
+    const errorDiv = this.container.querySelector('#github-login-error');
+    const token = tokenInput?.value.trim() || '';
 
     if (!token) {
       if (errorDiv) errorDiv.textContent = 'Please enter a token';
@@ -139,8 +138,7 @@ export class GitHubSettingsPanel {
         this.state.isAuthenticated = true;
         this.state.username = result.state.username;
         this.render();
-        // Clear the token from the input for security
-        tokenInput.value = '';
+        if (tokenInput) tokenInput.value = '';
       } else {
         if (errorDiv) errorDiv.textContent = 'Authentication failed. Please check your token.';
       }
@@ -170,12 +168,12 @@ export class GitHubSettingsPanel {
   }
 
   private async handleSaveRepo(): Promise<void> {
-    const ownerInput = document.getElementById('github-owner') as HTMLInputElement;
-    const repoInput = document.getElementById('github-repo') as HTMLInputElement;
-    const errorDiv = document.getElementById('github-repo-error');
+    const ownerInput = this.container.querySelector('#github-owner') as HTMLInputElement;
+    const repoInput = this.container.querySelector('#github-repo') as HTMLInputElement;
+    const errorDiv = this.container.querySelector('#github-repo-error');
 
-    const owner = ownerInput.value.trim();
-    const repo = repoInput.value.trim();
+    const owner = ownerInput?.value.trim() || '';
+    const repo = repoInput?.value.trim() || '';
 
     if (!owner || !repo) {
       if (errorDiv) {
