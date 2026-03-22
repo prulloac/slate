@@ -1,4 +1,5 @@
 import { ipcMain } from 'electron';
+
 import { GitHubAuth, SafeAuthState } from '../../github/auth';
 import { githubClient, GitHubConfig } from '../../github/client';
 

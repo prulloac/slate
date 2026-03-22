@@ -51,6 +51,7 @@ export class GitHubAuth {
 
       return true;
     } catch (error) {
+      githubClient.clearAuth();
       this.state = {
         isAuthenticated: false,
         token: null,
