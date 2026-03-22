@@ -1,6 +1,6 @@
 # GitHub PR Integration
 
-**Status:** planned
+**Status:** in-progress
 
 **See:** [#1](https://github.com/prulloac/slate/issues/1)
 

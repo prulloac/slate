@@ -19,6 +19,10 @@ export class GitHubClient {
     this.octokit = new Octokit({ auth: token });
   }
 
+  clearAuth(): void {
+    this.octokit = new Octokit();
+  }
+
   setRepository(owner: string, repo: string): void {
     this.config = { owner, repo };
   }
@@ -144,20 +148,6 @@ export class GitHubClient {
       pull_number: pullNumber,
       event,
       body,
-    });
-
-    return response.data;
-  }
-
-  async getCombinedStatus(ref: string) {
-    if (!this.config) {
-      throw new Error('Repository not set. Call setRepository() first.');
-    }
-
-    const response = await this.octokit.repos.getCombinedStatus({
-      owner: this.config.owner,
-      repo: this.config.repo,
-      ref,
     });
 
     return response.data;

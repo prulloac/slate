@@ -10,14 +10,14 @@ Deep integration with GitHub pull requests: load PRs, browse changes, post comme
 
 | # | Task | Status | Dependencies |
 |---|------|--------|--------------|
-| 1 | Set up GitHub API client library | todo | - |
-| 2 | Implement GitHub authentication (OAuth/token) | todo | #1 |
-| 3 | Create IPC bridge for GitHub API calls | todo | #1 |
+| 1 | Set up GitHub API client library | done | - |
+| 2 | Implement GitHub authentication (OAuth/token) | done | #1 |
+| 3 | Create IPC bridge for GitHub API calls | done | #1 |
 | 4 | Build PR list component | todo | #2, #3 |
 | 5 | Build PR detail/diff viewer | todo | #4 |
 | 6 | Implement review comments functionality | todo | #5 |
 | 7 | Add review state management (approve/request-changes) | todo | #5 |
-| 8 | Create settings panel for GitHub credentials | todo | #2 |
+| 8 | Create settings panel for GitHub credentials | done | #2 |
 | 9 | Add PR notifications/status checks display | todo | #4 |
 | 10 | Update feature status to stable | todo | #1-9 |
 
