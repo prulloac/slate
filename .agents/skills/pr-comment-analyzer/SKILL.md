@@ -1,11 +1,11 @@
 ---
 name: pr-comment-analyzer
-description: Analyze pull request comments using gh CLI. Use when user wants to review, categorize, or prioritize PR comments. Retrieves comments from specified PR or automatically detects from current branch, verifies applicability against current code, marks outdated comments, and presents filtered results in structured tables.
+description: Analyze pull request comments using gh CLI. Use when user wants to review, categorize, or prioritize PR comments. Retrieves comments from specified PR or automatically detects from current branch, verifies applicability against current code, marks outdated comments, and presents filtered results with resolution order based on impact and side-effect analysis.
 ---
 
 # PR Comment Analyzer
 
-This skill retrieves pull request comments using the `gh` CLI, categorizes them by type, and prioritizes them by severity.
+This skill retrieves pull request comments using the `gh` CLI, categorizes them by type, prioritizes them by severity, and suggests a resolution order based on impact analysis and side-effect evaluation of affected code sections.
 
 ## Workflows
 
@@ -15,7 +15,7 @@ This skill retrieves pull request comments using the `gh` CLI, categorizes them 
    - If PR number specified: `gh pr view <number> --comments`
    - If no PR specified: Run `gh pr list` to find PR matching current branch
 
-2. **Fetch comments**: `gh pr comment list <pr-number> --body`
+2. **Fetch comments**: `gh api repos/<owner>/<repo>/pulls/<num>/comments` to get all comments with metadata (commenter, file, line, content)
 
 3. **Assess each comment**:
    - Assign a **category** based on content type
@@ -27,11 +27,21 @@ This skill retrieves pull request comments using the `gh` CLI, categorizes them 
    - Mark comments as "outdated" if the issue has been resolved or no longer applies
    - Use code reading tools to inspect files and verify comment validity
 
-5. **Handle outdated comments**:
-   - For each outdated comment, reply using `gh pr comment <comment-id> --body "This comment is outdated and will not be fixed."`
+5. **Analyze impact and side effects**:
+   - For each unresolved comment, assess the impact on functionality and security
+   - Evaluate potential side effects by examining code dependencies and usage patterns
+   - Consider testing requirements and risk of introducing regressions
+
+6. **Determine resolution order**:
+   - Sort unresolved comments by priority (Critical > Important > Helpful > Nuance)
+   - Within each priority level, order by side effect complexity (low-risk first)
+   - Suggest implementation sequence that minimizes cascading changes
+
+7. **Handle outdated comments**:
+   - For each outdated comment, reply using `gh api -X POST repos/<owner>/<repo>/pulls/<pr-number>/comments/<comment-id>/replies -f body="This comment is outdated and will not be fixed."`
    - Remove outdated comments from further processing
 
-6. **Present results**: Format output with categorized and prioritized comments in table format
+8. **Present results**: Format output with categorized comments, priority tables, and resolution order
 
 ### Fetching PR Without Number
 
@@ -59,24 +69,41 @@ gh pr list --head $(git branch --show-current) --json number,title,state
 ### Comments by Priority
 
 #### 🔴 Critical
-| Comment # & Link | Commenter | Summary | Type |
-|------------------|-----------|---------|------|
-| [#123](link) | @username | Brief summary of the comment | security |
+| Comment # & Link | Commenter | Summary | Type | Impact | Side Effects |
+|------------------|-----------|---------|------|--------|--------------|
+| [#123](link) | @username | Brief summary of the comment | security | High - affects security | Low - isolated to CSP header |
 
 #### 🟠 Important
-| Comment # & Link | Commenter | Summary | Type |
-|------------------|-----------|---------|------|
-| [#124](link) | @username | Brief summary of the comment | refactor |
+| Comment # & Link | Commenter | Summary | Type | Impact | Side Effects |
+|------------------|-----------|---------|------|--------|--------------|
+| [#124](link) | @username | Brief summary of the comment | refactor | Medium - improves maintainability | Medium - affects multiple components |
 
 #### 🟡 Helpful
-| Comment # & Link | Commenter | Summary | Type |
-|------------------|-----------|---------|------|
-| [#125](link) | @username | Brief summary of the comment | improvement |
+| Comment # & Link | Commenter | Summary | Type | Impact | Side Effects |
+|------------------|-----------|---------|------|--------|--------------|
+| [#125](link) | @username | Brief summary of the comment | improvement | Low - minor enhancement | Low - localized change |
 
 #### ⚪ Nuance
-| Comment # & Link | Commenter | Summary | Type |
-|------------------|-----------|---------|------|
-| [#126](link) | @username | Brief summary of the comment | nitpicking |
+| Comment # & Link | Commenter | Summary | Type | Impact | Side Effects |
+|------------------|-----------|---------|------|--------|--------------|
+| [#126](link) | @username | Brief summary of the comment | nitpicking | Very Low - style only | Very Low - no functional impact |
+
+---
+
+### Resolution Order
+
+Based on impact analysis and side effect complexity, implement changes in this order:
+
+1. **High Impact, Low Risk**: Critical security issues and error handling
+2. **Medium Impact, Low Risk**: Important structural improvements  
+3. **Low Impact, Low Risk**: Helpful enhancements and optimizations
+4. **Very Low Impact**: Style and nitpicking improvements
+
+**Suggested Implementation Sequence:**
+1. [#123](link) - Security fix (immediate priority)
+2. [#124](link) - Error handling (prevents runtime issues)
+3. [#125](link) - UI improvement (enhances UX)
+4. [#126](link) - Code style (last priority)
 
 ---
 
@@ -177,7 +204,7 @@ See `references/categorization-examples.md` for detailed examples of each catego
 | `gh pr list --head <branch>` | Find PR by branch |
 | `gh pr view <num> --comments` | View PR with comments |
 | `gh api repos/<owner>/<repo>/pulls/<num>/comments` | List all PR comments |
-| `gh pr comment <comment-id> --body "message"` | Reply to a specific comment |
+| `gh api -X POST repos/<owner>/<repo>/pulls/<pr-number>/comments/<comment-id>/replies -f body="message"` | Reply to a specific comment |
 | `gh api repos/{owner}/{repo}/pulls/{num}/comments` | API for detailed comments |
 
 Base directory for this skill: file:///mnt/c/Users/prull/Documents/GitHub/slate/.agents/skills/pr-comment-analyzer
