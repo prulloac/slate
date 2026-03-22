@@ -27,7 +27,12 @@ docs/features/
    - Feature name and purpose
    - Maturity status: `planned` | `in-progress` | `stable` | `deprecated`
    - Key implementation details
+   - GitHub issue reference (e.g., `See [#123](https://github.com/owner/repo/issues/123)`)
 3. Update `docs/features/README.md` to include the new feature
+4. **VERIFICATION REQUIRED**: Before marking as `in-progress`, the agent MUST:
+   - Verify the GitHub issue exists and is properly documented
+   - Ensure all local file references (README, plan.md, etc.) link to the correct issue number
+   - Cross-reference any `#issue-number` mentions across documentation
 
 ### Creating Feature Action Plan
 
@@ -36,10 +41,12 @@ When a feature needs to be broken down into actionable tasks:
 1. Analyze the feature requirements and dependencies
 2. Create `docs/features/<feature-name>/plan.md` with:
    - Feature overview and goals
+   - GitHub issue reference linking to the relevant issue
    - Ordered list of tasks with dependencies noted
    - Each task should be a distinct, completable unit of work
    - Mark tasks as: `todo` | `in-progress` | `done` | `blocked`
 3. Update the feature's README.md to reference the plan
+4. **VERIFICATION REQUIRED**: Ensure the plan.md and README.md both reference the same GitHub issue number consistently
 
 ### Updating Feature Status
 
@@ -112,3 +119,22 @@ Use this template:
 - Directory names: kebab-case (e.g., `keyboard-navigation`)
 - No spaces or special characters in names
 - Names should be concise and descriptive
+
+## GitHub Issue Integration
+
+When a feature is decided to be implemented, the agent MUST verify:
+
+1. **Issue Existence**: Confirm the GitHub issue exists at `github.com/<owner>/<repo>/issues/<number>`
+2. **Consistent Referencing**: Ensure ALL of the following files reference the SAME issue number:
+   - Feature's `README.md` (must have a GitHub issue link)
+   - Feature's `plan.md` (if exists, must reference the issue)
+   - Main `docs/features/README.md` (if it links to the issue)
+3. **Cross-Reference Check**: Search for `#<issue-number>` patterns across the codebase to ensure all references are consistent
+
+If the GitHub issue does not exist, create it first before proceeding with feature implementation.
+
+### Required Issue Fields
+
+Feature documentation MUST include:
+- GitHub issue link in format: `See [#<number>](<url>)`
+- Issue number referenced in commit messages when applicable
