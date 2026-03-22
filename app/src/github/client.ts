@@ -149,20 +149,6 @@ export class GitHubClient {
     return response.data;
   }
 
-  async getCombinedStatus(ref: string) {
-    if (!this.config) {
-      throw new Error('Repository not set. Call setRepository() first.');
-    }
-
-    const response = await this.octokit.repos.getCombinedStatus({
-      owner: this.config.owner,
-      repo: this.config.repo,
-      ref,
-    });
-
-    return response.data;
-  }
-
   async getCheckRuns(ref: string) {
     if (!this.config) {
       throw new Error('Repository not set. Call setRepository() first.');

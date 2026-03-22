@@ -1,0 +1,70 @@
+import { githubClient } from './client';
+
+export interface AuthState {
+  isAuthenticated: boolean;
+  token: string | null;
+  username: string | null;
+  avatarUrl: string | null;
+}
+
+export class GitHubAuth {
+  private static state: AuthState = {
+    isAuthenticated: false,
+    token: null,
+    username: null,
+    avatarUrl: null,
+  };
+
+  static getState(): AuthState {
+    return { ...this.state };
+  }
+
+  static async authenticate(token: string): Promise<boolean> {
+    try {
+      githubClient.setAuthToken(token);
+
+      const { Octokit } = await import('@octokit/rest');
+      const tempOctokit = new Octokit({ auth: token });
+
+      const { data } = await tempOctokit.users.getAuthenticated();
+
+      this.state = {
+        isAuthenticated: true,
+        token,
+        username: data.login,
+        avatarUrl: data.avatar_url,
+      };
+
+      return true;
+    } catch (error) {
+      this.state = {
+        isAuthenticated: false,
+        token: null,
+        username: null,
+        avatarUrl: null,
+      };
+      return false;
+    }
+  }
+
+  static logout(): void {
+    this.state = {
+      isAuthenticated: false,
+      token: null,
+      username: null,
+      avatarUrl: null,
+    };
+  }
+
+  static isAuthenticated(): boolean {
+    return this.state.isAuthenticated;
+  }
+
+  static getToken(): string | null {
+    return this.state.token;
+  }
+
+  static getUsername(): string | null {
+    return this.state.username;
+  }
+}
