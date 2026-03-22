@@ -42,6 +42,13 @@
 - **Conventional Commits**: Validates commit messages using [Conventional Commits](https://www.conventionalcommits.org/) format (via prulloac/pre-commit-hooks)
 - **Lint-staged**: ESLint --fix on staged `*.ts,*.tsx` files before commit
 
+## Available Skills
+| Skill | Description |
+|-------|-------------|
+| `pr-comment-analyzer` | Retrieve and analyze PR comments using gh CLI. Categorizes by type (security, documentation, nitpicking, refactor, improvement) and prioritizes by severity (nuance, helpful, important, critical). |
+| `feature-tracker` | Track and document project features in docs/features/ |
+| `test-case-writer` | Write test cases using Gherkin syntax |
+
 ## Directory Structure
 - `app/` - Application source and build configuration
 - `app/src/` - Main source code
