@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Commit-msg hook - validates conventional commits
+
+cd "$(dirname "$0")/../../.."
+
+HOOK_DIR="${HOME}/.cache/slate-pre-commit-hooks"
+COMMIT_MSG_FILE="$1"
+
+if [ ! -d "$HOOK_DIR" ]; then
+    git clone --depth 1 https://github.com/prulloac/pre-commit-hooks "$HOOK_DIR"
+fi
+
+python3 "${HOOK_DIR}/pre_commit_hooks/validate_commit_msg_conventional.py" "$COMMIT_MSG_FILE"

@@ -9,6 +9,7 @@
     "make": "cd app && npm run make",
     "publish": "cd app && npm run publish",
     "install": "cd app && npm install",
-    "test": "cd app && npm test"
+    "test": "cd app && npm test",
+    "ci": "cd app && npm run ci"
   }
 }

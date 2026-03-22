@@ -32,10 +32,15 @@
 
 ## Commit Conventions
 - Use imperative mood: "Add feature", "Fix bug"
-- Format: `<type>: <description>` (e.g., `feat: add code review panel`)
-- Types: `feat`, `fix`, `refactor`, `docs`, `chore`, `style`, `test`
+- Format: `<type>(<scope>)?: <description>` (e.g., `feat(auth): add OAuth login`)
+- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
 - Keep total commit under 8 lines, first line under 72 characters
 - Reference issues: `fix: resolve crash (#5)`
+
+## Pre-commit Hooks
+- **Husky**: Manages git hooks at `app/.husky/_/`
+- **Conventional Commits**: Validates commit messages using [Conventional Commits](https://www.conventionalcommits.org/) format (via prulloac/pre-commit-hooks)
+- **Lint-staged**: ESLint --fix on staged `*.ts,*.tsx` files before commit
 
 ## Directory Structure
 - `app/` - Application source and build configuration
