@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron';
 
-import { GitHubAuth, SafeAuthState } from '../../github/auth';
+import { GitHubAuth } from '../../github/auth';
+import { SafeAuthState } from '../../types/github';
 import { githubClient, GitHubConfig } from '../../github/client';
 
 export function registerGitHubIpcHandlers(): void {

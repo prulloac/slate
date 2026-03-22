@@ -35,10 +35,14 @@ const createWindow = (): void => {
 // Global uncaught errors for easier crash diagnosis.
 process.on('uncaughtException', (error) => {
   console.error('Uncaught exception in main process:', error);
+  // Exit the application to avoid running in an undefined state.
+  app.exit(1);
 });
 
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled rejection in main process:', reason);
+  // Exit the application to avoid running in an undefined state.
+  app.exit(1);
 });
 
 // This method will be called when Electron has finished

@@ -1,14 +1,9 @@
 import { githubClient } from './client';
+import { SafeAuthState } from '../types/github';
 
 export interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
-  username: string | null;
-  avatarUrl: string | null;
-}
-
-export interface SafeAuthState {
-  isAuthenticated: boolean;
   username: string | null;
   avatarUrl: string | null;
 }

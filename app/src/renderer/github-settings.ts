@@ -87,6 +87,7 @@ export class GitHubSettingsPanel {
         </div>
         <button id="github-save-repo" class="btn btn-primary">Save Repository</button>
       </div>
+      <div id="github-repo-error" class="error-message"></div>
     `;
   }
 
@@ -138,6 +139,8 @@ export class GitHubSettingsPanel {
         this.state.isAuthenticated = true;
         this.state.username = result.state.username;
         this.render();
+        // Clear the token from the input for security
+        tokenInput.value = '';
       } else {
         if (errorDiv) errorDiv.textContent = 'Authentication failed. Please check your token.';
       }
@@ -148,32 +151,58 @@ export class GitHubSettingsPanel {
   }
 
   private async handleLogout(): Promise<void> {
-    await window.github.logout();
-    this.state = {
-      owner: '',
-      repo: '',
-      isAuthenticated: false,
-      username: null,
-    };
-    this.render();
+    try {
+      await window.github.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+      if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+        window.alert('An error occurred while logging out. You may need to try again.');
+      }
+    } finally {
+      this.state = {
+        owner: '',
+        repo: '',
+        isAuthenticated: false,
+        username: null,
+      };
+      this.render();
+    }
   }
 
   private async handleSaveRepo(): Promise<void> {
     const ownerInput = document.getElementById('github-owner') as HTMLInputElement;
     const repoInput = document.getElementById('github-repo') as HTMLInputElement;
+    const errorDiv = document.getElementById('github-repo-error');
 
     const owner = ownerInput.value.trim();
     const repo = repoInput.value.trim();
 
     if (!owner || !repo) {
+      if (errorDiv) {
+        errorDiv.textContent = 'Please enter both an owner and a repository name.';
+      }
       return;
     }
 
-    const result = await window.github.setRepository({ owner, repo });
+    try {
+      const result = await window.github.setRepository({ owner, repo });
 
-    if (result.success) {
-      this.state.owner = owner;
-      this.state.repo = repo;
+      if (result.success) {
+        this.state.owner = owner;
+        this.state.repo = repo;
+        if (errorDiv) {
+          errorDiv.textContent = '';
+        }
+      } else {
+        if (errorDiv) {
+          errorDiv.textContent = 'Failed to save repository settings. Please check the owner and repository name.';
+        }
+      }
+    } catch (error) {
+      console.error('Error saving GitHub repository settings:', error);
+      if (errorDiv) {
+        errorDiv.textContent = 'An error occurred while saving repository settings. Please try again.';
+      }
     }
   }
 }
