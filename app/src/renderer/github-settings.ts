@@ -1,40 +1,12 @@
-export interface GitHubSettings {
-  owner: string;
-  repo: string;
-  token: string;
-}
+import { GitHubAPI } from '../types/github';
 
 declare global {
   interface Window {
-    github: {
-      authenticate: (token: string) => Promise<{ success: boolean; state: unknown }>;
-      logout: () => Promise<{ success: boolean }>;
-      getAuthState: () => Promise<unknown>;
-      setRepository: (config: { owner: string; repo: string }) => Promise<{ success: boolean; error?: string }>;
-      listPullRequests: (options?: { state?: 'open' | 'closed' | 'all'; perPage?: number }) => Promise<{ success: boolean; data?: unknown[]; error?: string }>;
-      getPullRequest: (pullNumber: number) => Promise<{ success: boolean; data?: unknown; error?: string }>;
-      getPullRequestFiles: (pullNumber: number) => Promise<{ success: boolean; data?: unknown[]; error?: string }>;
-      getReviews: (pullNumber: number) => Promise<{ success: boolean; data?: unknown[]; error?: string }>;
-      getComments: (pullNumber: number) => Promise<{ success: boolean; data?: unknown[]; error?: string }>;
-      createReviewComment: (
-        pullNumber: number,
-        body: string,
-        commitId: string,
-        path: string,
-        line: number
-      ) => Promise<{ success: boolean; data?: unknown; error?: string }>;
-      submitReview: (
-        pullNumber: number,
-        event: 'APPROVE' | 'REQUEST_CHANGES' | 'COMMENT',
-        body?: string
-      ) => Promise<{ success: boolean; data?: unknown; error?: string }>;
-      getCheckRuns: (ref: string) => Promise<{ success: boolean; data?: unknown[]; error?: string }>;
-    };
+    github: GitHubAPI;
   }
 }
 
 export interface SettingsState {
-  token: string;
   owner: string;
   repo: string;
   isAuthenticated: boolean;
@@ -44,7 +16,6 @@ export interface SettingsState {
 export class GitHubSettingsPanel {
   private container: HTMLElement;
   private state: SettingsState = {
-    token: '',
     owner: '',
     repo: '',
     isAuthenticated: false,
@@ -58,12 +29,16 @@ export class GitHubSettingsPanel {
   }
 
   private async loadState(): Promise<void> {
-    const authState = await window.github.getAuthState() as {
-      isAuthenticated: boolean;
-      username: string | null;
-    };
-    this.state.isAuthenticated = authState.isAuthenticated;
-    this.state.username = authState.username;
+    try {
+      const authState = await window.github.getAuthState();
+      this.state.isAuthenticated = authState.isAuthenticated;
+      this.state.username = authState.username;
+    } catch (error) {
+      // Fallback to a safe unauthenticated state if the auth state cannot be loaded.
+      console.error('Failed to load GitHub auth state:', error);
+      this.state.isAuthenticated = false;
+      this.state.username = null;
+    }
     this.render();
   }
 
@@ -75,22 +50,40 @@ export class GitHubSettingsPanel {
       </div>
     `;
     this.attachEventListeners();
+    
+    // Safely set dynamic content to prevent XSS
+    if (this.state.isAuthenticated) {
+      const usernameElement = this.container.querySelector('.auth-info strong') as HTMLElement;
+      if (usernameElement) {
+        usernameElement.textContent = this.state.username || '';
+      }
+      
+      const ownerInput = document.getElementById('github-owner') as HTMLInputElement;
+      if (ownerInput) {
+        ownerInput.value = this.state.owner;
+      }
+      
+      const repoInput = document.getElementById('github-repo') as HTMLInputElement;
+      if (repoInput) {
+        repoInput.value = this.state.repo;
+      }
+    }
   }
 
   private renderAuthenticated(): string {
     return `
       <div class="auth-info">
-        <span>Logged in as: <strong>${this.state.username}</strong></span>
+        <span>Logged in as: <strong></strong></span>
         <button id="github-logout" class="btn btn-danger">Logout</button>
       </div>
       <div class="settings-form">
         <div class="form-group">
           <label for="github-owner">Repository Owner</label>
-          <input type="text" id="github-owner" placeholder="e.g., prulloac" value="${this.state.owner}">
+          <input type="text" id="github-owner" placeholder="e.g., prulloac">
         </div>
         <div class="form-group">
           <label for="github-repo">Repository Name</label>
-          <input type="text" id="github-repo" placeholder="e.g., slate" value="${this.state.repo}">
+          <input type="text" id="github-repo" placeholder="e.g., slate">
         </div>
         <button id="github-save-repo" class="btn btn-primary">Save Repository</button>
       </div>
@@ -138,22 +131,25 @@ export class GitHubSettingsPanel {
       return;
     }
 
-    const result = await window.github.authenticate(token);
+    try {
+      const result = await window.github.authenticate(token);
 
-    if (result.success) {
-      const state = result.state as { username: string };
-      this.state.isAuthenticated = true;
-      this.state.username = state.username;
-      this.render();
-    } else {
-      if (errorDiv) errorDiv.textContent = 'Authentication failed. Please check your token.';
+      if (result.success) {
+        this.state.isAuthenticated = true;
+        this.state.username = result.state.username;
+        this.render();
+      } else {
+        if (errorDiv) errorDiv.textContent = 'Authentication failed. Please check your token.';
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+      if (errorDiv) errorDiv.textContent = 'An error occurred during authentication. Please try again.';
     }
   }
 
   private async handleLogout(): Promise<void> {
     await window.github.logout();
     this.state = {
-      token: '',
       owner: '',
       repo: '',
       isAuthenticated: false,
