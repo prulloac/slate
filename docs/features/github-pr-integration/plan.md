@@ -1,5 +1,7 @@
 # GitHub PR Integration - Action Plan
 
+**See:** [#1](https://github.com/prulloac/slate/issues/1)
+
 ## Overview
 
 Deep integration with GitHub pull requests: load PRs, browse changes, post comments, and manage review state directly within Slate.

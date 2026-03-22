@@ -2,11 +2,11 @@
 
 ## Feature Status Overview
 
-| Feature | Status | Description |
-|---------|--------|-------------|
-| [keyboard-workflow](keyboard-workflow/) | planned | 100% keyboard-driven workflow |
-| [noise-filtering](noise-filtering/) | planned | Intelligent filtering of AI-generated noise |
-| [github-pr-integration](github-pr-integration/) | planned | Deep integration with GitHub pull requests |
+| Feature | Status | Issue | Description |
+|---------|--------|-------|-------------|
+| [keyboard-workflow](keyboard-workflow/) | planned | - | 100% keyboard-driven workflow |
+| [noise-filtering](noise-filtering/) | planned | - | Intelligent filtering of AI-generated noise |
+| [github-pr-integration](github-pr-integration/) | planned | [#1](https://github.com/prulloac/slate/issues/1) | Deep integration with GitHub pull requests |
 
 ## Maturity Legend
 
