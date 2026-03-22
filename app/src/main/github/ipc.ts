@@ -1,11 +1,11 @@
 import { ipcMain } from 'electron';
-import { GitHubAuth, AuthState } from '../../github/auth';
+import { GitHubAuth, SafeAuthState } from '../../github/auth';
 import { githubClient, GitHubConfig } from '../../github/client';
 
 export function registerGitHubIpcHandlers(): void {
   ipcMain.handle('github:authenticate', async (_event, token: string) => {
     const success = await GitHubAuth.authenticate(token);
-    return { success, state: GitHubAuth.getState() };
+    return { success, state: GitHubAuth.getSafeState() };
   });
 
   ipcMain.handle('github:logout', async () => {
@@ -13,8 +13,8 @@ export function registerGitHubIpcHandlers(): void {
     return { success: true };
   });
 
-  ipcMain.handle('github:getAuthState', async (): Promise<AuthState> => {
-    return GitHubAuth.getState();
+  ipcMain.handle('github:getAuthState', async (): Promise<SafeAuthState> => {
+    return GitHubAuth.getSafeState();
   });
 
   ipcMain.handle(

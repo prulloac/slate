@@ -7,6 +7,12 @@ export interface AuthState {
   avatarUrl: string | null;
 }
 
+export interface SafeAuthState {
+  isAuthenticated: boolean;
+  username: string | null;
+  avatarUrl: string | null;
+}
+
 export class GitHubAuth {
   private static state: AuthState = {
     isAuthenticated: false,
@@ -17,6 +23,14 @@ export class GitHubAuth {
 
   static getState(): AuthState {
     return { ...this.state };
+  }
+
+  static getSafeState(): SafeAuthState {
+    return {
+      isAuthenticated: this.state.isAuthenticated,
+      username: this.state.username,
+      avatarUrl: this.state.avatarUrl,
+    };
   }
 
   static async authenticate(token: string): Promise<boolean> {
