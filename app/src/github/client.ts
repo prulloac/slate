@@ -19,6 +19,10 @@ export class GitHubClient {
     this.octokit = new Octokit({ auth: token });
   }
 
+  clearAuth(): void {
+    this.octokit = new Octokit();
+  }
+
   setRepository(owner: string, repo: string): void {
     this.config = { owner, repo };
   }

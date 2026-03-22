@@ -35,12 +35,12 @@ export class GitHubAuth {
 
   static async authenticate(token: string): Promise<boolean> {
     try {
-      githubClient.setAuthToken(token);
-
       const { Octokit } = await import('@octokit/rest');
       const tempOctokit = new Octokit({ auth: token });
 
       const { data } = await tempOctokit.users.getAuthenticated();
+
+      githubClient.setAuthToken(token);
 
       this.state = {
         isAuthenticated: true,
@@ -62,6 +62,7 @@ export class GitHubAuth {
   }
 
   static logout(): void {
+    githubClient.clearAuth();
     this.state = {
       isAuthenticated: false,
       token: null,
