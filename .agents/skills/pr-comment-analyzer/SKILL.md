@@ -15,7 +15,16 @@ This skill retrieves pull request comments using the `gh` CLI, categorizes them 
    - If PR number specified: `gh pr view <number> --comments`
    - If no PR specified: Run `gh pr list` to find PR matching current branch
 
-2. **Fetch comments**: `gh api repos/<owner>/<repo>/pulls/<num>/comments` to get all comments with metadata (commenter, file, line, content)
+2. **Fetch comments**:
+   - Get PR details to check comment counts: `gh api repos/<owner>/<repo>/pulls/<pr-number>`
+   - Extract `review_comments` and `comments` counts from the response
+   - Fetch review comments (diff comments):
+     - If `review_comments <= 30`: `gh api repos/<owner>/<repo>/pulls/<num>/comments`
+     - If `review_comments > 30`: Paginate with `gh api repos/<owner>/<repo>/pulls/<num>/comments?page=<page>&per_page=100` starting from page=1 until all pages fetched
+   - Fetch issue comments (PR discussion comments):
+     - If `review_comments <= 30`: `gh api repos/<owner>/<repo>/issues/<num>/comments`
+     - If `comments > 30`: Paginate with `gh api repos/<owner>/<repo>/issues/<num>/comments?page=<page>&per_page=100` starting from page=1 until all pages fetched
+   - Combine all comments with metadata (commenter, file, line, content)
 
 3. **Assess each comment**:
    - Assign a **category** based on content type
@@ -203,7 +212,11 @@ See `references/categorization-examples.md` for detailed examples of each catego
 |---------|-------------|
 | `gh pr list --head <branch>` | Find PR by branch |
 | `gh pr view <num> --comments` | View PR with comments |
-| `gh api repos/<owner>/<repo>/pulls/<num>/comments` | List all PR comments |
+| `gh api repos/<owner>/<repo>/pulls/<pr-number>` | Get PR details including comment counts |
+| `gh api repos/<owner>/<repo>/pulls/<num>/comments` | List review comments (first 30) |
+| `gh api repos/<owner>/<repo>/pulls/<num>/comments?page=<page>&per_page=100` | List review comments with pagination |
+| `gh api repos/<owner>/<repo>/issues/<num>/comments` | List issue comments (first 30) |
+| `gh api repos/<owner>/<repo>/issues/<num>/comments?page=<page>&per_page=100` | List issue comments with pagination |
 | `gh api -X POST repos/<owner>/<repo>/pulls/<pr-number>/comments/<comment-id>/replies -f body="message"` | Reply to a specific comment |
 | `gh api repos/{owner}/{repo}/pulls/{num}/comments` | API for detailed comments |
 
